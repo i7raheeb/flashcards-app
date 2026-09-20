@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="منصة اختبار تحليلي تفاعلية مدعومة بالبطاقات الذكية">
+    
+    <title>اختبار تحليلي | البطاقات الذكية</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- مكتبة MathJax للمعادلات الرياضية -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧪 اختبار تحليلي - FlashMind</h1>
+            <p class="subtitle">انقر على البطاقة لقلبها | مسافة (Space) للقلب | الأسهم للتنقل</p>
+        </header>
+        
+        <main class="scene">
+            <div class="flashcard" id="card">
+                <div class="card-face card-front">
+                    <span class="badge">السؤال</span>
+                    <div class="card-content" id="frontText">جاري التحميل...</div>
+                </div>
+                <div class="card-face card-back">
+                    <span class="badge answer-badge">الإجابة</span>
+                    <div class="card-content" id="backText">...</div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="controls">
+            <button id="prev" title="البطاقة السابقة">⬅️ السابقة</button>
+            <span id="counter">1 / 10</span>
+            <button id="next" title="البطاقة التالية">التالية ➡️</button>
+        </footer>
+    </div>
+    
+    <script src="cards.js"></script>
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
+</body>
+</html>
