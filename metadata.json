@@ -1,0 +1,8 @@
+{
+  "name": "اختبار تحليلي | البطاقات الذكية",
+  "description": "منصة تفاعلية متطورة للبطاقات الذكية مع وكيل ذكاء اصطناعي لتحليل وتلخيص ملفات الـ PDF وتوليد أسئلة وبطاقات دراسية",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

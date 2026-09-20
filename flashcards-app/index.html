@@ -3,48 +3,632 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="description" content="منصة اختبار تحليلي تفاعلية مدعومة بالبطاقات الذكية">
+    <meta name="theme-color" content="#090d16">
+    <meta name="description" content="منصة تفاعلية متطورة للبطاقات الذكية مع وكيل ذكاء اصطناعي لتحليل وتلخيص ملفات الـ PDF وتوليد أسئلة وبطاقات دراسية">
+    <meta property="og:title" content="اختبار تحليلي | البطاقات الذكية">
+    <meta property="og:description" content="منصة تفاعلية متطورة للبطاقات الذكية مع وكيل ذكاء اصطناعي لتحليل وتلخيص ملفات الـ PDF وتوليد أسئلة وبطاقات دراسية">
     
     <title>اختبار تحليلي | البطاقات الذكية</title>
     <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FlashMind">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    
+    <!-- خطوط جوجل العربية الحديثة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
     
     <!-- مكتبة MathJax للمعادلات الرياضية -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🧪 اختبار تحليلي - FlashMind</h1>
-            <p class="subtitle">انقر على البطاقة لقلبها | مسافة (Space) للقلب | الأسهم للتنقل</p>
-        </header>
-        
-        <main class="scene">
-            <div class="flashcard" id="card">
-                <div class="card-face card-front">
-                    <span class="badge">السؤال</span>
-                    <div class="card-content" id="frontText">جاري التحميل...</div>
+    <!-- خلفية حركية فاخرة -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div class="app-wrapper">
+        <!-- شريط الترويسة العلوي الفاخر -->
+        <header class="app-header" id="appHeader">
+            <div class="header-top">
+                <div class="brand-group">
+                    <div class="brand-logo" id="brandLogo">
+                        <span class="logo-icon">⚡</span>
+                    </div>
+                    <div class="brand-text">
+                        <div class="title-row">
+                            <h1 class="brand-name" id="mainTitle">فلاش مايند</h1>
+                            <span class="codename-badge" id="codenameBadge" title="الاسم الرمزي في الذاكرة الموحدة">FLASHMIND-CORE</span>
+                        </div>
+                        <p class="brand-sub">منصة البطاقات الذكية لكافة التخصصات (علوم الحاسب، الأمن السيبراني والمزيد)</p>
+                    </div>
                 </div>
-                <div class="card-face card-back">
-                    <span class="badge answer-badge">الإجابة</span>
-                    <div class="card-content" id="backText">...</div>
+
+                <!-- أزرار الإجراءات السريعة -->
+                <div class="quick-actions" id="quickActions">
+                    <button class="action-btn pwa-install-nav-btn" id="pwaInstallBtn" title="تثبيت التطبيق على الهاتف">
+                        <span class="btn-icon">📲</span>
+                        <span class="btn-text">تثبيت التطبيق</span>
+                    </button>
+
+                    <button class="action-btn" id="openAddCardBtn" title="إضافة بطاقة جديدة يدوياً">
+                        <span class="btn-icon">➕</span>
+                        <span class="btn-text">إضافة بطاقة</span>
+                    </button>
+
+                    <button class="action-btn" id="openEditCardBtn" title="تعديل البطاقة المعروضة">
+                        <span class="btn-icon">✏️</span>
+                        <span class="btn-text">تعديل</span>
+                    </button>
+
+                    <button class="action-btn icon-only-btn" id="soundToggleBtn" title="تشغيل / كتم الصوت التفاعلي">
+                        <span id="soundIcon">🔊</span>
+                    </button>
+
+                    <button class="action-btn icon-only-btn" id="manageDeckBtn" title="إدارة الحزمة واستيراد وتصدير">
+                        <span>⚙️</span>
+                    </button>
+
+                    <button class="action-btn icon-only-btn" id="fullscreenBtn" title="وضع ملء الشاشة">
+                        <span id="fullscreenIcon">⛶</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- تبويبات التصفية وزر إضافة PDF البارز في مكانه الجديد -->
+            <div class="deck-filter-bar">
+                <div class="filters-tabs" id="filterTabs">
+                    <button class="filter-tab active" data-filter="all" id="filterAll">
+                        الكل (<span id="countAll">0</span>)
+                    </button>
+                    <button class="filter-tab" data-filter="needs_review" id="filterReview">
+                        تحتاج مراجعة 🔄 (<span id="countReview">0</span>)
+                    </button>
+                    <button class="filter-tab" data-filter="mastered" id="filterMastered">
+                        متقنة ✅ (<span id="countMastered">0</span>)
+                    </button>
+                    <button class="filter-tab" data-filter="favorites" id="filterFavorites">
+                        المفضلة ⭐ (<span id="countFavorites">0</span>)
+                    </button>
+                </div>
+
+                <!-- المكان الجديد البارز لأيقونة وزر رفع وتلخيص PDF -->
+                <div class="deck-actions-group">
+                    <button class="action-btn ai-btn primary-deck-pdf-btn" id="openAiModalBtn" title="وكيل تلخيص ملفات PDF الذكي وصنع البطاقات">
+                        <span class="btn-icon">📄</span>
+                        <span class="btn-text">رفع وتلخيص ملف PDF</span>
+                        <span class="sparkle-tag">AI Ready</span>
+                    </button>
+
+                    <div class="stats-overview" id="statsOverview">
+                        <div class="stat-pill" title="نسبة إتقانك لهذه المجموعة">
+                            <span class="stat-label">الإتقان:</span>
+                            <span class="stat-value" id="masteryPercent">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شريط التقدم التفاعلي -->
+            <div class="progress-track" title="شريط تقدم البطاقات">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </header>
+
+        <!-- منطقة مسرح البطاقة الرئيسية -->
+        <main class="card-stage" id="cardStage">
+            <!-- السلايد الفارغ التفاعلي (يظهر عندما تكون البطاقات فارغة بانتظار رفع ملف PDF) -->
+            <div class="empty-slide-container" id="emptySlideContainer">
+                <div class="empty-slide-card" id="emptySlideCard">
+                    <div class="empty-slide-badge">
+                        <span class="pulse-dot"></span>
+                        <span id="emptySlideBadgeText">بانتظار مستندك الدراسي</span>
+                    </div>
+
+                    <div class="empty-slide-icon-box" id="emptySlideIconTrigger" title="انقر لرفع ملف PDF">
+                        <span class="empty-slide-icon">📄</span>
+                        <span class="empty-slide-ai-tag">AI Agent</span>
+                    </div>
+
+                    <h2 class="empty-slide-title" id="emptySlideTitle">السلايد فارغ بانتظار ملفك</h2>
+                    <p class="empty-slide-desc" id="emptySlideDesc">
+                        ارفع أي ملف دراسي أو تقني بصيغة <code>.PDF</code> (أمن سيبراني، علوم حاسب، شبكات، أو أي تخصص)، وسيقوم وكيل الذكاء الاصطناعي بتحليله وتلخيصه وصناعة حزمة البطاقات الذكية لك فوراً.
+                    </p>
+
+                    <div class="empty-slide-cta">
+                        <button class="btn-empty-slide-upload" id="emptySlidePdfBtn">
+                            <span class="btn-icon">📄</span>
+                            <span>رفع وتلخيص ملف PDF وصنع البطاقات</span>
+                            <span class="sparkle-tag">ذكاء اصطناعي</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scene" id="sceneContainer">
+                <div class="flashcard" id="card" tabindex="0" role="button" aria-label="انقر لقلب البطاقة">
+                    
+                    <!-- وجه البطاقة (السؤال) -->
+                    <div class="card-face card-front" id="cardFrontFace">
+                        <div class="card-header-bar">
+                            <span class="category-pill" id="frontCategory">رياضيات متقطعة</span>
+                            <div class="card-header-actions">
+                                <button class="fav-toggle-btn" id="favToggleBtn" title="إضافة إلى المفضلة">
+                                    <span id="favIcon">☆</span>
+                                </button>
+                                <span class="badge question-badge">السؤال</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="card-content" id="frontText">جاري التحميل...</div>
+                        </div>
+
+                        <div class="card-footer-bar">
+                            <span class="flip-hint">
+                                <span class="flip-icon">↻</span> انقر على البطاقة أو اضغط Space للقلب
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- ظهر البطاقة (الإجابة النموذجية) -->
+                    <div class="card-face card-back" id="cardBackFace">
+                        <div class="card-header-bar">
+                            <span class="category-pill" id="backCategory">رياضيات متقطعة</span>
+                            <span class="badge answer-badge">الإجابة النموذجية</span>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="card-content" id="backText">جاري استرجاع الإجابة...</div>
+                        </div>
+
+                        <!-- التقييم الذاتي المباشر داخل ظهر البطاقة -->
+                        <div class="card-assessment-bar" id="assessmentBar">
+                            <button class="assess-btn review-btn" id="markReviewBtn" title="لم أتذكرها تماماً وأحتاج لمراجعتها">
+                                <span>🔄 أحتاج مراجعة</span>
+                            </button>
+                            <button class="assess-btn master-btn" id="markMasterBtn" title="أتقنت هذه المسألة تماماً">
+                                <span>✅ أتقنتها بالكامل</span>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
-        
-        <footer class="controls">
-            <button id="prev" title="البطاقة السابقة">⬅️ السابقة</button>
-            <span id="counter">1 / 10</span>
-            <button id="next" title="البطاقة التالية">التالية ➡️</button>
+
+        <!-- أزرار التحكم بالتنقل والوظائف الإضافية -->
+        <footer class="app-controls" id="appControls">
+            <div class="controls-main">
+                <button class="nav-btn" id="prev" title="البطاقة السابقة (السهم الأيمن)">
+                    <span class="nav-arrow">⬅️</span>
+                    <span class="nav-label">السابقة</span>
+                </button>
+
+                <div class="card-counter-box" id="counterBox">
+                    <span id="counter">1 / 10</span>
+                </div>
+
+                <button class="flip-action-btn" id="flipBtn" title="اقلب البطاقة">
+                    <span class="btn-symbol">🔄</span>
+                    <span class="btn-text">قلب البطاقة</span>
+                </button>
+
+                <button class="nav-btn" id="next" title="البطاقة التالية (السهم الأيسر)">
+                    <span class="nav-label">التالية</span>
+                    <span class="nav-arrow">➡️</span>
+                </button>
+            </div>
+
+            <!-- شريط الوظائف الذكية (خلط، تشغيل تلقائي، حذف) -->
+            <div class="controls-secondary">
+                <button class="sub-action-btn" id="shuffleBtn" title="خلط ترتيب البطاقات عشوائياً (اختصار S)">
+                    <span>🔀 خلط عشوائي</span>
+                </button>
+                <button class="sub-action-btn" id="autoPlayBtn" title="بدء العرض التلقائي للبطاقات كل 6 ثوانٍ">
+                    <span id="autoPlayIcon">▶️</span> <span id="autoPlayText">عرض تلقائي</span>
+                </button>
+                <button class="sub-action-btn danger-btn" id="deleteCardBtn" title="حذف البطاقة الحالية">
+                    <span>🗑️ حذف البطاقة</span>
+                </button>
+            </div>
+
+            <!-- دليل اختصارات لوحة المفاتيح -->
+            <div class="keyboard-hints" id="keyboardHints">
+                <span class="hint-item"><kbd>Space</kbd> للقلب</span>
+                <span class="hint-item"><kbd>→</kbd> <kbd>←</kbd> للتنقل</span>
+                <span class="hint-item"><kbd>M</kbd> تم الإتقان</span>
+                <span class="hint-item"><kbd>S</kbd> خلط</span>
+                <span class="hint-item"><kbd>F</kbd> ملء الشاشة</span>
+            </div>
         </footer>
     </div>
-    
+
+    <!-- نافذة إضافة / تعديل بطاقة -->
+    <div class="modal-overlay" id="cardModal">
+        <div class="modal-card" id="cardModalContent">
+            <div class="modal-header">
+                <h3 id="modalTitle">➕ إضافة بطاقة جديدة</h3>
+                <button class="modal-close-btn" id="closeCardModalBtn">&times;</button>
+            </div>
+            
+            <form id="cardForm" class="modal-form">
+                <input type="hidden" id="editCardId" value="">
+
+                <div class="form-group">
+                    <label for="cardCategoryInput">الموضوع أو التصنيف:</label>
+                    <input type="text" id="cardCategoryInput" placeholder="مثلاً: خوارزميات، تفاضل، كيمياء..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardQuestionInput">
+                        السؤال أو المسألة:
+                        <small class="hint-tex">(يدعم صيغ LaTeX الرياضية مثل $x^2$ أو $$\sum_{i=1}^n$$)</small>
+                    </label>
+                    <textarea id="cardQuestionInput" rows="3" placeholder="اكتب السؤال هنا..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardAnswerInput">
+                        الإجابة النموذجية أو الشرح:
+                        <small class="hint-tex">(يدعم الأسطر المتعددة والمعادلات)</small>
+                    </label>
+                    <textarea id="cardAnswerInput" rows="4" placeholder="اكتب الإجابة هنا..." required></textarea>
+                </div>
+
+                <!-- معاينة فورية لرموز الرياضيات -->
+                <div class="preview-box">
+                    <div class="preview-header">
+                        <span>معاينة فورية للمعادلات الرياضية:</span>
+                        <button type="button" class="preview-refresh-btn" id="refreshMathPreview">🔄 تحديث المعاينة</button>
+                    </div>
+                    <div class="preview-content" id="liveMathPreview">اكتب بالصندوق لمشاهدة المعاينة...</div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelCardModalBtn">إلغاء</button>
+                    <button type="submit" class="btn-primary" id="saveCardBtn">💾 حفظ البطاقة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة إدارة الحزم والتصدير / الاستيراد -->
+    <div class="modal-overlay" id="deckModal">
+        <div class="modal-card" id="deckModalContent">
+            <div class="modal-header">
+                <h3>⚙️ إدارة الحزم والنسخ الاحتياطي</h3>
+                <button class="modal-close-btn" id="closeDeckModalBtn">&times;</button>
+            </div>
+
+            <div class="deck-modal-body">
+                <div class="deck-stats-grid">
+                    <div class="d-stat">
+                        <span class="d-num" id="dTotalCount">10</span>
+                        <span class="d-txt">إجمالي البطاقات</span>
+                    </div>
+                    <div class="d-stat">
+                        <span class="d-num" id="dMasteredCount">0</span>
+                        <span class="d-txt">أتقنتها</span>
+                    </div>
+                    <div class="d-stat">
+                        <span class="d-num" id="dReviewCount">10</span>
+                        <span class="d-txt">بحاجة لمراجعة</span>
+                    </div>
+                </div>
+
+                <div class="deck-action-section">
+                    <h4>📤 تصدير واستيراد البيانات</h4>
+                    <p class="section-desc">يمكنك حفظ كافة بطاقاتك كملف JSON ونقلها أو مشاركتها بكل سهولة.</p>
+                    <div class="button-row">
+                        <button class="btn-secondary" id="exportCardsBtn">📥 تصدير كملف JSON</button>
+                        <label class="btn-secondary file-label" for="importJsonInput">
+                            📤 استيراد ملف JSON
+                            <input type="file" id="importJsonInput" accept=".json" style="display: none;">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="deck-action-section danger-zone">
+                    <h4>🔄 استعادة البطاقات الأصلية</h4>
+                    <p class="section-desc">إعادة تعيين المجموعة إلى البطاقات النموذجية الافتراضية (علوم حاسب وأمن سيبراني).</p>
+                    <button class="btn-danger" id="resetDefaultsBtn">إعادة ضبط المصنع</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة وكيل الذكاء الاصطناعي لتحليل وتلخيص ملفات الـ PDF -->
+    <div class="modal-overlay" id="aiModal">
+        <div class="modal-card ai-modal-card" id="aiModalContent">
+            <div class="modal-header">
+                <div class="ai-title-wrap">
+                    <span class="ai-spark-icon">✨</span>
+                    <div>
+                        <h3>وكيل الذكاء الاصطناعي لتحليل وتلخيص الـ PDF</h3>
+                        <span class="ai-badge-sub">استخلاص حصري وموثوق للأسئلة والبطاقات من ملفك فقط</span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeAiModalBtn">&times;</button>
+            </div>
+
+            <div class="ai-modal-body">
+                <!-- 1. واجهة الاختيار والرفع (Upload View) -->
+                <div id="aiUploadView" class="ai-view-section">
+                    <div class="ai-announcement">
+                        <div class="announcement-icon">🎯</div>
+                        <div class="announcement-text">
+                            <strong>تحليل دقيق واستناد حصري للمستند المرفق</strong>
+                            <p>
+                                ارفع أي ملف دراسي أو تقني بصيغة <code>.PDF</code> (علوم حاسب، أمن سيبراني، شبكات، برمجة، وغيرها)، وسيقوم وكيل الذكاء الاصطناعي بقراءة كامل نصوصه وتلخيصه، ثم توليد بطاقات دراسية <strong>مستقاة حصرياً من محتوى الملف فقط دون أي خلط أو إضافات خارجية</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- منطقة السحب والإفلات للملف -->
+                    <div class="ai-dropzone" id="aiDropzone">
+                        <input type="file" id="pdfFileInput" accept=".pdf,application/pdf" style="display: none;">
+                        <div class="dropzone-icon">📑</div>
+                        <div class="dropzone-text">
+                            <strong>اسحب وأفلت ملف الـ PDF هنا، أو انقر لاختياره من جهازك</strong>
+                            <p>صيغة المستند: PDF (حتى 30 ميجابايت - يدعم الكتب، السلايدات، والأوراق البحثية)</p>
+                        </div>
+                        <div class="dropzone-file-info" id="selectedPdfInfo" style="display: none;">
+                            <span class="pdf-icon">📄</span>
+                            <span class="pdf-name" id="selectedPdfName">لم يتم تحديد ملف بعد</span>
+                            <span class="pdf-size" id="selectedPdfSize"></span>
+                            <button type="button" class="btn-remove-pdf" id="removePdfBtn" title="إزالة الملف">✕</button>
+                        </div>
+                    </div>
+
+                    <!-- خيارات استخراج البطاقات -->
+                    <div class="ai-settings-preview">
+                        <div class="ai-opt">
+                            <label for="aiCardCount">عدد البطاقات المستهدفة:</label>
+                            <select id="aiCardCount" class="ai-select">
+                                <option value="5">5 بطاقات (مراجعة فائقة السرعة)</option>
+                                <option value="10" selected>10 بطاقات مركزة</option>
+                                <option value="15">15 بطاقة شاملة</option>
+                                <option value="20">20 بطاقة تفصيلية</option>
+                                <option value="25">25 بطاقة متعمقة</option>
+                            </select>
+                        </div>
+                        <div class="ai-opt">
+                            <label for="aiDifficulty">نمط التحليل والصياغة:</label>
+                            <select id="aiDifficulty" class="ai-select">
+                                <option value="academic" selected>أكاديمي وتحليلي (مفاهيم دقيقة وشرح وافٍ)</option>
+                                <option value="simplified">مبسط ومركز (مفاهيم مباشرة للحفظ السريع)</option>
+                                <option value="qa">أسئلة اختبارات ذكية ومقارنات</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- توجيه إضافي اختياري -->
+                    <div class="ai-opt ai-opt-full">
+                        <label for="aiCustomNotes">توجيهات أو تركيز إضافي (اختياري):</label>
+                        <input type="text" id="aiCustomNotes" class="ai-text-input" placeholder="مثال: التركيز على المسائل الحسابية والقوانين فقط...">
+                    </div>
+
+                    <!-- زر بدء المعالجة بالذكاء الاصطناعي -->
+                    <div class="ai-actions">
+                        <button class="btn-ai-generate" id="startAiAnalysisBtn">
+                            <span>⚡ بدء تحليل الـ PDF وتوليد البطاقات الذكية</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. واجهة حالة المعالجة الحية (Progress Stepper) -->
+                <div id="aiLoadingView" class="ai-view-section" style="display: none;">
+                    <div class="ai-loading-container">
+                        <div class="ai-spinner-halo">
+                            <div class="ai-spinner-core"></div>
+                        </div>
+                        <h4 class="ai-loading-title">جاري تحليل مستندك بالذكاء الاصطناعي...</h4>
+                        <p class="ai-loading-subtitle" id="aiLoadingSubtitle">يقوم الوكيل بفحص النصوص وتوليد الأسئلة حصرياً من الملف المرفوع</p>
+
+                        <!-- قائمة خطوات المعالجة الحية -->
+                        <div class="ai-stepper">
+                            <div class="ai-step" id="stepRead">
+                                <span class="step-bullet">1</span>
+                                <div class="step-info">
+                                    <strong>قراءة وتجهيز ملف الـ PDF</strong>
+                                    <span class="step-desc">استخراج وتشفير المستند بأعلى درجات الأمان</span>
+                                </div>
+                                <span class="step-status">⏳</span>
+                            </div>
+                            <div class="ai-step" id="stepAgent">
+                                <span class="step-bullet">2</span>
+                                <div class="step-info">
+                                    <strong>إرسال المستند لوكيل Gemini 3.8 Flash</strong>
+                                    <span class="step-desc">النموذج المتخصص في معالجة المستندات الكبيرة</span>
+                                </div>
+                                <span class="step-status">⏳</span>
+                            </div>
+                            <div class="ai-step" id="stepExtract">
+                                <span class="step-bullet">3</span>
+                                <div class="step-info">
+                                    <strong>استخلاص الملخص التنفيذي والأسئلة الحصرية</strong>
+                                    <span class="step-desc">الالتزام الحصري بمحتوى الملف دون تلفيق أو معلومات خارجية</span>
+                                </div>
+                                <span class="step-status">⏳</span>
+                            </div>
+                            <div class="ai-step" id="stepRender">
+                                <span class="step-bullet">4</span>
+                                <div class="step-info">
+                                    <strong>صياغة البطاقات وتجهيز حزمة المذاكرة</strong>
+                                    <span class="step-desc">إعداد التنسيق وتجهيز البطاقات للمذاكرة التفاعلية الفورية</span>
+                                </div>
+                                <span class="step-status">⏳</span>
+                            </div>
+                        </div>
+
+                        <div class="ai-timer-badge" id="aiElapsedTimer">⏱️ الوقت المنقضي: 00:00</div>
+                    </div>
+                </div>
+
+                <!-- 3. واجهة النتائج والملخص والبطاقات (Results Showcase) -->
+                <div id="aiResultsView" class="ai-view-section" style="display: none;">
+                    <div class="ai-results-header">
+                        <div class="ai-results-badge">
+                            <span>✅ تم التحليل والاستخلاص الحصري بنجاح</span>
+                        </div>
+                        <h4 id="resultsDocTitle">الملخص التنفيذي للمستند</h4>
+                    </div>
+
+                    <!-- صندوق الملخص التنفيذي -->
+                    <div class="doc-summary-card">
+                        <div class="doc-summary-meta">
+                            <span class="doc-badge-grounded">🔒 استناد حصري 100% من الملف المرفق</span>
+                            <span class="doc-card-count" id="resultsCardsCountBadge">10 بطاقات مستخلصة</span>
+                        </div>
+                        <p class="doc-summary-text" id="resultsSummaryText">جاري تحميل الملخص...</p>
+                        
+                        <div class="doc-topics-section">
+                            <span class="doc-topics-label">أبرز المحاور والمفاهيم المستخرجة:</span>
+                            <div class="doc-topics-chips" id="resultsTopicsList"></div>
+                        </div>
+                    </div>
+
+                    <!-- استعراض البطاقات الناتجة -->
+                    <div class="generated-cards-section">
+                        <div class="generated-cards-header">
+                            <h5>معاينة البطاقات الدراسية المستخرجة:</h5>
+                            <span class="cards-preview-hint">انقر للتوسيع أو أضفها فوراً لمجموعتك للمذاكرة التفاعلية</span>
+                        </div>
+                        <div class="generated-cards-list" id="generatedCardsList"></div>
+                    </div>
+
+                    <!-- أزرار الإجراءات الاحترافية -->
+                    <div class="ai-results-actions">
+                        <button class="btn-action-primary-glow" id="applyAndStudyBtn" title="حذف البطاقات السابقة والاعتماد الحصري على بطاقات هذا الملف فقط">
+                            <span>🎯 اعتماد بطاقات هذا الملف فقط وبدء المذاكرة</span>
+                        </button>
+                        <button class="btn-action-secondary" id="replaceAndStudyBtn" title="دمج هذه البطاقات مع بطاقاتك السابقة دون حذفها">
+                            <span>➕ دمج مع البطاقات السابقة</span>
+                        </button>
+                        <button class="btn-action-outline" id="exportAiCardsJsonBtn">
+                            <span>📥 حفظ كـ JSON</span>
+                        </button>
+                        <button class="btn-action-text" id="analyzeAnotherPdfBtn">
+                            <span>🔄 تحليل ملف آخر</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. واجهة الخطأ إن وجد -->
+                <div id="aiErrorView" class="ai-view-section" style="display: none;">
+                    <div class="ai-error-box">
+                        <div class="error-icon">⚠️</div>
+                        <h4 id="aiErrorTitle">تعذر إكمال تحليل الملف</h4>
+                        <p id="aiErrorMessage">حدث خطأ أثناء معالجة المستند.</p>
+                        <button class="btn-secondary" id="aiRetryBtn">🔄 المحاولة مرة أخرى</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تثبيت التطبيق على الهاتف (PWA Modal) -->
+    <div class="modal-overlay" id="pwaModal">
+        <div class="modal-card pwa-install-dialog" id="pwaModalContent">
+            <div class="modal-header">
+                <div class="pwa-header-brand">
+                    <img src="icon-192.png" alt="FlashMind" class="pwa-dialog-app-icon">
+                    <div>
+                        <h3>تثبيت تطبيق فلاش مايند</h3>
+                        <p class="pwa-subtitle">منصة البطاقات الذكية على هاتفك المحمول</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closePwaModalBtn">&times;</button>
+            </div>
+
+            <div class="pwa-modal-body">
+                <!-- قسم أندرويد وكروم للكمبيوتر -->
+                <div class="pwa-install-section" id="pwaDirectInstallBox">
+                    <p class="pwa-prompt-text">
+                        احصل على تجربة تطبيق أصلية سريعة بملء الشاشة، مع إمكانية المذاكرة ومراجعة البطاقات حتى بدون اتصال بالإنترنت!
+                    </p>
+                    <button class="btn-action-primary-glow pwa-main-install-btn" id="pwaTriggerInstallBtn">
+                        <span class="btn-icon">📲</span>
+                        <span>تثبيت التطبيق الآن على جهازك</span>
+                    </button>
+                </div>
+
+                <!-- إرشادات آيفون وآيباد (iOS Safari) -->
+                <div class="pwa-ios-instructions" id="pwaIosGuide">
+                    <div class="ios-guide-badge">🍏 لمستخدمي آيفون وآيباد (Safari):</div>
+                    <ol class="ios-steps-list">
+                        <li>
+                            <span class="step-num">1</span>
+                            <span>اضغط على زر المشاركة <strong>(Share <span class="ios-icon">⎘</span>)</strong> في أسفل شاشة سفاري.</span>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <span>مرر للأسفل واضغط على <strong>«إضافة إلى الشاشة الرئيسية» (Add to Home Screen)</strong>.</span>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <span>اضغط على <strong>«إضافة» (Add)</strong> في أعلى اليمين.</span>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- مميزات التطبيق المثبت -->
+                <div class="pwa-features-grid">
+                    <div class="pwa-feature-item">
+                        <span class="pwa-feat-icon">⚡</span>
+                        <div>
+                            <strong>سرعة فائقة</strong>
+                            <span>فتح فوري وتصفح سلس</span>
+                        </div>
+                    </div>
+                    <div class="pwa-feature-item">
+                        <span class="pwa-feat-icon">📶</span>
+                        <div>
+                            <strong>يعمل بدون إنترنت</strong>
+                            <span>حفظ البطاقات محلياً بالكامل</span>
+                        </div>
+                    </div>
+                    <div class="pwa-feature-item">
+                        <span class="pwa-feat-icon">📱</span>
+                        <div>
+                            <strong>واجهة كاملة الشاشة</strong>
+                            <span>بدون أشرطة المتصفح المزعجة</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer pwa-footer">
+                <button class="btn-secondary" id="dismissPwaModalBtn">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- تنبيه منبثق (Toast) -->
+    <div class="toast-notification" id="toast"></div>
+
     <script src="cards.js"></script>
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js');
+            navigator.serviceWorker.register('service-worker.js').catch(() => {});
         }
     </script>
 </body>
