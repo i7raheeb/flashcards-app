@@ -9,6 +9,10 @@
   "orientation": "portrait",
   "background_color": "#090d16",
   "theme_color": "#090d16",
+  "categories": ["education", "productivity"],
+  "lang": "ar",
+  "dir": "rtl",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icon-192.png",
@@ -27,6 +31,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "شاشة مراجعة البطاقات الذكية على الهاتف"
+    },
+    {
+      "src": "screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "واجهة البطاقات التعليمية التفاعلية على الحاسوب"
     }
   ]
 }
